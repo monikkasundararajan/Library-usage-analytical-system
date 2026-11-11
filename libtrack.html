@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LibTrack - Library Usage Analysis System</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#f5f7fb;
+    color:#1f2937;
+}
+
+header{
+    background:#4f46e5;
+    color:white;
+    padding:18px 6%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:bold;
+}
+
+nav button{
+    background:none;
+    border:none;
+    color:white;
+    margin:0 8px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+nav button:hover{
+    text-decoration:underline;
+}
+
+.page{
+    display:none;
+    padding:30px 6%;
+}
+
+.page.active{
+    display:block;
+}
+
+.hero{
+    background:white;
+    padding:35px;
+    border-radius:18px;
+    margin-bottom:25px;
+    box-shadow:0 3px 15px rgba(0,0,0,.07);
+}
+
+.hero h1{
+    color:#4f46e5;
+    margin-bottom:10px;
+}
+
+.muted{
+    color:#6b7280;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:18px;
+    margin:20px 0;
+}
+
+.card{
+    background:white;
+    padding:22px;
+    border-radius:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.06);
+}
+
+.card h3{
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.card p{
+    font-size:28px;
+    font-weight:bold;
+    color:#4f46e5;
+}
+
+.section{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:25px;
+    box-shadow:0 3px 12px rgba(0,0,0,.06);
+}
+
+.section h2{
+    margin-bottom:18px;
+}
+
+input,select{
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    margin:5px;
+}
+
+.btn{
+    background:#4f46e5;
+    color:white;
+    border:none;
+    padding:11px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin:5px;
+}
+
+.btn:hover{
+    opacity:.9;
+}
+
+.secondary{
+    background:#eef2ff;
+    color:#4338ca;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:18px;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+}
+
+th{
+    background:#f8fafc;
+}
+
+.available{
+    color:green;
+    font-weight:bold;
+}
+
+.unavailable{
+    color:red;
+    font-weight:bold;
+}
+
+.fine{
+    color:#b91c1c;
+    font-weight:800;
+}
+
+.notice{
+    padding:13px;
+    border-radius:10px;
+    background:#f8fafc;
+    margin:8px 0;
+}
+
+.contactbox{
+    background:#eef0ff;
+    border:1px solid #dfe3ff;
+    border-radius:12px;
+    padding:16px;
+    margin-top:18px;
+}
+
+.contactbox a{
+    color:#4f46e5;
+    font-weight:700;
+    text-decoration:none;
+}
+
+.chart{
+    margin:15px 0;
+}
+
+.bar{
+    background:#4f46e5;
+    height:25px;
+    border-radius:6px;
+    margin:8px 0;
+    color:white;
+    padding-left:8px;
+    line-height:25px;
+}
+
+.quick{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    color:#6b7280;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    align-items:center;
+    justify-content:center;
+    z-index:200;
+}
+
+.modal-content{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    width:90%;
+    max-width:500px;
+}
+
+.close{
+    float:right;
+    cursor:pointer;
+    font-size:22px;
+}
+
+@media(max-width:700px){
+    header{
+        flex-direction:column;
+        gap:12px;
+    }
+
+    nav button{
+        margin:4px;
+    }
+
+    table{
+        font-size:13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">📚 LibTrack</div>
+
+    <nav>
+        <button onclick="showPage('home')">Home</button>
+        <button onclick="showPage('books')">Books</button>
+        <button onclick="showPage('activity')">My Activity</button>
+        <button onclick="showPage('analytics')">Analytics</button>
+        <button onclick="showPage('reports')">Reports</button>
+    </nav>
+</header>
+
+
+<!-- HOME -->
+<section id="home" class="page active">
+
+    <div class="hero">
+        <h1>Library Usage Analysis System</h1>
+        <p class="muted">
+            Monitor library usage, book availability, student activity,
+            borrowing trends and overdue records.
+        </p>
+    </div>
+
+    <div class="stats">
+
+        <div class="card">
+            <h3>Total Books</h3>
+            <p id="totalBooks">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Available Books</h3>
+            <p id="availableBooks">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Currently Issued</h3>
+            <p id="issuedBooks">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Registered Students</h3>
+            <p id="totalStudents">20</p>
+        </div>
+
+        <div class="card">
+            <h3>Today's Visitors</h3>
+            <p>86</p>
+        </div>
+
+        <div class="card">
+            <h3>Overdue Books</h3>
+            <p class="fine">5</p>
+        </div>
+
+    </div>
+
+    <div class="section">
+
+        <h2>🔎 Quick Book Search</h2>
+
+        <input
+            type="text"
+            id="quickSearch"
+            placeholder="Search book title or author"
+        >
+
+        <button class="btn" onclick="quickSearchBook()">
+            Search
+        </button>
+
+        <div id="quickResult"></div>
+
+    </div>
+
+    <div class="section">
+
+        <h2>📢 Library Notices</h2>
+
+        <div class="notice">
+            📌 Library hours: 8:30 AM – 6:00 PM
+        </div>
+
+        <div class="notice">
+            ⚠️ Students must return books before the due date.
+        </div>
+
+        <div class="notice">
+            💰 Overdue fine: ₹5 per day per book.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- BOOKS -->
+<section id="books" class="page">
+
+    <div class="section">
+
+        <h2>📚 Book Search</h2>
+
+        <input
+            type="text"
+            id="bookSearch"
+            placeholder="Search title, author or Book ID"
+            oninput="displayBooks()"
+        >
+
+        <select id="departmentFilter" onchange="displayBooks()">
+            <option value="">All Departments</option>
+            <option>CSE</option>
+            <option>AI & ML</option>
+            <option>ECE</option>
+            <option>EEE</option>
+            <option>Mechanical</option>
+        </select>
+
+        <select id="statusFilter" onchange="displayBooks()">
+            <option value="">All Status</option>
+            <option value="Available">Available</option>
+            <option value="Unavailable">Unavailable</option>
+        </select>
+
+        <div id="bookTable"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ACTIVITY -->
+<section id="activity" class="page">
+
+    <div class="section">
+
+        <h2>👤 Student Activity</h2>
+
+        <p class="muted">
+            Enter a registered student ID to view library activity.
+        </p>
+
+        <input
+            type="text"
+            id="studentId"
+            placeholder="Example: 26SECE001"
+        >
+
+        <button class="btn" onclick="findStudent()">
+            View Profile
+        </button>
+
+        <div id="studentResult"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ANALYTICS -->
+<section id="analytics" class="page">
+
+    <div class="section">
+
+        <h2>📊 Library Analytics</h2>
+
+        <p class="muted">
+            Usage trends based on sample library data.
+        </p>
+
+        <h3>Department Usage</h3>
+
+        <div class="chart">
+            CSE
+            <div class="bar" style="width:90%">90%</div>
+
+            AI & ML
+            <div class="bar" style="width:78%">78%</div>
+
+            ECE
+            <div class="bar" style="width:63%">63%</div>
+
+            EEE
+            <div class="bar" style="width:48%">48%</div>
+
+            Mechanical
+            <div class="bar" style="width:35%">35%</div>
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>⏰ Peak Library Hours</h2>
+
+        <div class="notice">
+            8 AM – 10 AM → Moderate usage
+        </div>
+
+        <div class="notice">
+            10 AM – 12 PM → High usage
+        </div>
+
+        <div class="notice">
+            12 PM – 2 PM → Moderate usage
+        </div>
+
+        <div class="notice">
+            2 PM – 4 PM → <b>Peak usage</b>
+        </div>
+
+        <div class="notice">
+            4 PM – 6 PM → High usage
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>💡 AI Insights</h2>
+
+        <div class="notice">
+            📈 Library usage increased by approximately 18%.
+        </div>
+
+        <div class="notice">
+            📚 Programming and database books have high demand.
+        </div>
+
+        <div class="notice">
+            🕑 Peak activity occurs between 2 PM and 4 PM.
+        </div>
+
+        <div class="notice">
+            🏫 CSE students show the highest library usage in the sample dataset.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- REPORTS -->
+<section id="reports" class="page">
+
+    <div class="section">
+
+        <h2>📑 Reports</h2>
+
+        <p class="muted">
+            Select a report. The Generate Report button creates
+            a downloadable report from the sample data.
+        </p>
+
+        <div class="quick">
+
+            <button class="btn secondary"
+                    onclick="report('Monthly Usage')">
+                Monthly Usage
+            </button>
+
+            <button class="btn secondary"
+                    onclick="report('Department Usage')">
+                Department Usage
+            </button>
+
+            <button class="btn secondary"
+                    onclick="report('Book Popularity')">
+                Book Popularity
+            </button>
+
+            <button class="btn secondary"
+                    onclick="report('Overdue')">
+                Overdue Report
+            </button>
+
+        </div>
+
+
+        <!-- CONTACT -->
+
+        <div class="contactbox">
+
+            <b>📞 Library Help & Queries</b>
+
+            <p>
+                For any library-related queries, contact:
+            </p>
+
+            <p>
+                📧 Email:
+                <a href="mailto:libtracksece@gmail.com">
+                    libtracksece@gmail.com
+                </a>
+            </p>
+
+            <p>
+                ☎️ Landline:
+                <a href="tel:+914224567890">
+                    +91 422 456 7890
+                </a>
+            </p>
+
+            <p class="muted">
+                Please contact the library for book availability,
+                overdue/fine queries, renewals and other assistance.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="section" id="reportOutput">
+
+        <h2>Report Preview</h2>
+
+        <p class="muted">
+            Choose a report above.
+        </p>
+
+    </div>
+
+</section>
+
+
+<footer>
+    LibTrack • College Library Usage Analysis System •
+    Prototype using sample data • Fine rate: ₹5/day for overdue books
+</footer>
+
+
+<!-- BOOK MODAL -->
+
+<div class="modal" id="bookModal">
+
+    <div class="modal-content">
+
+        <span class="close" onclick="closeModal()">×</span>
+
+        <div id="modalContent"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SAMPLE BOOK DATA
+========================= */
+
+const books = [
+
+["B001","Python Programming","John Smith","CSE",5,3,45,"A1"],
+["B002","Data Structures","Mark Allen","CSE",4,1,52,"A2"],
+["B003","Database Management Systems","R. Kumar","CSE",5,2,48,"A3"],
+["B004","Computer Networks","Andrew Tan","CSE",4,3,36,"A4"],
+["B005","Operating Systems","William Stallings","CSE",5,4,41,"A5"],
+
+["B006","Artificial Intelligence","Russell","AI & ML",4,2,39,"B1"],
+["B007","Machine Learning Basics","Tom Mitchell","AI & ML",4,1,46,"B2"],
+["B008","Deep Learning","Ian Goodfellow","AI & ML",3,2,34,"B3"],
+["B009","Computer Vision","Richard Szeliski","AI & ML",3,3,25,"B4"],
+["B010","Natural Language Processing","Daniel Jurafsky","AI & ML",4,2,31,"B5"],
+
+["B011","Digital Electronics","Thomas Floyd","ECE",5,3,28,"C1"],
+["B012","Signals and Systems","Alan Oppenheim","ECE",4,2,22,"C2"],
+["B013","Communication Systems","Simon Haykin","ECE",4,3,26,"C3"],
+["B014","Microprocessors","Ramesh Gaonkar","ECE",3,1,19,"C4"],
+["B015","Embedded Systems","Shibu KV","ECE",3,2,24,"C5"],
+
+["B016","Electrical Machines","P.S. Bimbhra","EEE",4,3,17,"D1"],
+["B017","Power Systems","C.L. Wadhwa","EEE",4,2,21,"D2"],
+["B018","Circuit Theory","A. Sudhakar","EEE",3,2,18,"D3"],
+["B019","Control Systems","Nagrath","EEE",3,1,15,"D4"],
+["B020","Power Electronics","M.H. Rashid","EEE",3,2,20,"D5"],
+
+["B021","Engineering Mechanics","R.K. Bansal","Mechanical",5,4,16,"E1"],
+["B022","Thermodynamics","R.S. Khurmi","Mechanical",4,2,18,"E2"],
+["B023","Fluid Mechanics","R.K. Rajput","Mechanical",4,3,14,"E3"],
+["B024","Manufacturing Technology","P.N. Rao","Mechanical",3,2,12,"E4"],
+["B025","Engineering Drawing","N.D. Bhatt","Mechanical",5,4,23,"E5"],
+
+["B026","Java Programming","Herbert Schildt","CSE",4,2,37,"A6"],
+["B027","C++ Programming","Bjarne Stroustrup","CSE",4,3,33,"A7"],
+["B028","Web Development","Jon Duckett","CSE",5,3,29,"A8"],
+["B029","Statistics for Data Science","James Jones","AI & ML",4,1,27,"B6"],
+["B030","Python for Data Science","Jake VanderPlas","AI & ML",4,2,43,"B7"]
+
+];
+
+
+/* =========================
+   STUDENT DATA
+========================= */
+
+const students = [
+
+["26SECE001","Arun Kumar","CSE",1,18,12,2,0],
+["26SECE002","Priya Sharma","CSE",1,22,16,3,1],
+["26SECE003","Rahul Raj","CSE",1,15,9,1,0],
+["26SECE004","Divya S","CSE",1,25,18,4,1],
+
+["26SECA001","Ananya R","AI & ML",1,20,14,2,0],
+["26SECA002","Karthik M","AI & ML",1,17,11,2,1],
+["26SECA003","Harini P","AI & ML",1,23,15,3,0],
+["26SECA004","Vishal K","AI & ML",1,19,12,2,0],
+
+["26SEEC001","Naveen R","ECE",1,14,8,1,0],
+["26SEEC002","Keerthana S","ECE",1,16,10,2,1],
+["26SEEC003","Sanjay P","ECE",1,12,7,1,0],
+["26SEEC004","Aishwarya V","ECE",1,18,11,2,0],
+
+["26SEEE001","Deepak R","EEE",1,11,6,1,0],
+["26SEEE002","Meena K","EEE",1,13,7,1,0],
+["26SEEE003","Vignesh S","EEE",1,10,5,1,1],
+["26SEEE004","Pavithra M","EEE",1,15,8,2,0],
+
+["26SEME001","Suresh B","Mechanical",1,9,5,1,0],
+["26SEME002","Nithya R","Mechanical",1,12,6,1,0],
+["26SEME003","Aravind K","Mechanical",1,8,4,1,0],
+["26SEME004","Monisha P","Mechanical",1,10,5,1,0]
+
+];
+
+
+/* =========================
+   PAGE NAVIGATION
+========================= */
+
+function showPage(page){
+
+    document.querySelectorAll(".page")
+    .forEach(p => p.classList.remove("active"));
+
+    document.getElementById(page)
+    .classList.add("active");
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================
+   DASHBOARD STATS
+========================= */
+
+function loadStats(){
+
+    let total = 0;
+    let available = 0;
+    let issued = 0;
+
+    books.forEach(book => {
+
+        total += book[4];
+
+        available += book[5];
+
+        issued += book[4] - book[5];
+
+    });
+
+    document.getElementById("totalBooks").textContent = total;
+
+    document.getElementById("availableBooks").textContent = available;
+
+    document.getElementById("issuedBooks").textContent = issued;
+
+}
+
+
+/* =========================
+   BOOK DISPLAY
+========================= */
+
+function displayBooks(){
+
+    const search =
+        document.getElementById("bookSearch")
+        .value.toLowerCase();
+
+    const department =
+        document.getElementById("departmentFilter").value;
+
+    const status =
+        document.getElementById("statusFilter").value;
+
+    let filtered = books.filter(book => {
+
+        const matchesSearch =
+            book[0].toLowerCase().includes(search) ||
+            book[1].toLowerCase().includes(search) ||
+            book[2].toLowerCase().includes(search);
+
+        const matchesDepartment =
+            !department || book[3] === department;
+
+        const bookStatus =
+            book[5] > 0 ? "Available" : "Unavailable";
+
+        const matchesStatus =
+            !status || status === bookStatus;
+
+        return matchesSearch &&
+               matchesDepartment &&
+               matchesStatus;
+
+    });
+
+
+    if(filtered.length === 0){
+
+        document.getElementById("bookTable").innerHTML =
+        `<div class="notice">
+            ❌ Book not found.
+        </div>`;
+
+        return;
+
+    }
+
+
+    let table = `
+
+    <table>
+
+        <tr>
+
+            <th>Book ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Department</th>
+            <th>Total</th>
+            <th>Available</th>
+            <th>Status</th>
+            <th>Action</th>
+
+        </tr>
+    `;
+
+
+    filtered.forEach(book => {
+
+        const status =
+            book[5] > 0 ? "Available" : "Unavailable";
+
+        const statusClass =
+            book[5] > 0 ? "available" : "unavailable";
+
+
+        table += `
+
+        <tr>
+
+            <td>${book[0]}</td>
+
+            <td>${book[1]}</td>
+
+            <td>${book[2]}</td>
+
+            <td>${book[3]}</td>
+
+            <td>${book[4]}</td>
+
+            <td>${book[5]}</td>
+
+            <td class="${statusClass}">
+                ${status}
+            </td>
+
+            <td>
+                <button class="btn"
+                onclick="viewBook('${book[0]}')">
+                Details
+                </button>
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+    table += "</table>";
+
+    document.getElementById("bookTable").innerHTML = table;
+
+}
+
+
+/* =========================
+   BOOK DETAILS
+========================= */
+
+function viewBook(id){
+
+    const book =
+        books.find(b => b[0] === id);
+
+    if(!book) return;
+
+
+    document.getElementById("modalContent").innerHTML = `
+
+        <h2>${book[1]}</h2>
+
+        <br>
+
+        <p><b>Book ID:</b> ${book[0]}</p>
+
+        <p><b>Author:</b> ${book[2]}</p>
+
+        <p><b>Department:</b> ${book[3]}</p>
+
+        <p><b>Total Copies:</b> ${book[4]}</p>
+
+        <p><b>Available Copies:</b> ${book[5]}</p>
+
+        <p><b>Issued Copies:</b>
+            ${book[4]-book[5]}
+        </p>
+
+        <p><b>Times Borrowed:</b>
+            ${book[6]}
+        </p>
+
+        <p><b>Rack:</b> ${book[7]}</p>
+
+        <br>
+
+        <p>
+            <b>Status:</b>
+            ${book[5] > 0
+                ? '<span class="available">Available</span>'
+                : '<span class="unavailable">Unavailable</span>'
+            }
+        </p>
+
+    `;
+
+    document.getElementById("bookModal")
+    .style.display = "flex";
+
+}
+
+
+function closeModal(){
+
+    document.getElementById("bookModal")
+    .style.display = "none";
+
+}
+
+
+/* =========================
+   QUICK SEARCH
+========================= */
+
+function quickSearchBook(){
+
+    const query =
+        document.getElementById("quickSearch")
+        .value.toLowerCase();
+
+    const results =
+        books.filter(book =>
+            book[1].toLowerCase().includes(query) ||
+            book[2].toLowerCase().includes(query)
+        );
+
+
+    if(results.length === 0){
+
+        document.getElementById("quickResult").innerHTML =
+        `<div class="notice">
+            ❌ Book not found.
+        </div>`;
+
+        return;
+
+    }
+
+
+    document.getElementById("quickResult").innerHTML =
+        results.slice(0,5).map(book => `
+
+        <div class="notice">
+
+            <b>${book[1]}</b><br>
+
+            Author: ${book[2]}<br>
+
+            Available:
+            ${book[5]} / ${book[4]} copies
+
+        </div>
+
+        `).join("");
+
+}
+
+
+/* =========================
+   STUDENT SEARCH
+========================= */
+
+function findStudent(){
+
+    const id =
+        document.getElementById("studentId")
+        .value.trim().toUpperCase();
+
+    const student =
+        students.find(s => s[0] === id);
+
+
+    if(!student){
+
+        document.getElementById("studentResult").innerHTML =
+        `<div class="notice">
+            ❌ Student record not found.
+        </div>`;
+
+        return;
+
+    }
+
+
+    document.getElementById("studentResult").innerHTML = `
+
+    <div class="stats">
+
+        <div class="card">
+            <h3>Student Name</h3>
+            <p style="font-size:20px">
+                ${student[1]}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Student ID</h3>
+            <p style="font-size:20px">
+                ${student[0]}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Department</h3>
+            <p style="font-size:20px">
+                ${student[2]}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Year</h3>
+            <p>
+                ${student[3]}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Library Visits</h3>
+            <p>
+                ${student[4]}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Books Borrowed</h3>
+            <p>
+                ${student[5]}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Currently Borrowed</h3>
+            <p>
+                ${student[6]}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Overdue</h3>
+            <p class="fine">
+                ${student[7]}
+            </p>
+        </div>
+
+    </div>
+
+    <div class="notice">
+
+        💰 <b>Fine Information:</b>
+
+        ${student[7] > 0
+            ? `This student has ${student[7]} overdue book(s).
+               Fine is calculated at ₹5 per overdue day.`
+            : "No overdue books. No fine is currently applicable."
+        }
+
+    </div>
+
+    `;
+
+}
+
+
+/* =========================
+   REPORT SYSTEM
+========================= */
+
+function report(type){
+
+    let text = "";
+
+    let reportDetails = "";
+
+
+    if(type === "Monthly Usage"){
+
+        text =
+        "<b>Monthly Usage:</b> Library usage increased by 18% compared with the previous month. Peak activity occurs during afternoon hours.";
+
+        reportDetails =
+        "Peak usage: 2:00 PM – 4:00 PM";
+
+    }
+
+
+    if(type === "Department Usage"){
+
+        text =
+        "<b>Department Usage:</b> CSE leads the sample dataset, followed by AI & ML and ECE.";
+
+        reportDetails =
+        "Highest-usage department: CSE";
+
+    }
+
+
+    if(type === "Book Popularity"){
+
+        text =
+        "<b>Book Popularity:</b> Programming, data and database books are among the highest-demand titles.";
+
+        reportDetails =
+        "Use this report to identify books that may need additional copies.";
+
+    }
+
+
+    if(type === "Overdue"){
+
+        const overdueCount = 5;
+
+        const finePerDay = 5;
+
+        const sampleDays = 3;
+
+        const sampleFine =
+            overdueCount *
+            sampleDays *
+            finePerDay;
+
+
+        text = `
+
+        <b>Overdue Report:</b>
+
+        ${overdueCount} overdue records require attention.
+
+        A fine of
+        <span class="fine">
+        ₹${finePerDay} per overdue day
+        </span>
+        is applicable in this prototype.
+
+        `;
+
+
+        reportDetails = `
+
+        Sample fine calculation:
+
+        ${overdueCount}
+        overdue records ×
+        ${sampleDays}
+        overdue days ×
+        ₹${finePerDay}
+
+        =
+
+        <span class="fine">
+        ₹${sampleFine}
+        </span>
+
+        total sample fine.
+
+        Actual fine should be calculated from
+        each book's real overdue days.
+
+        `;
+
+    }
+
+
+    document.getElementById("reportOutput").innerHTML = `
+
+        <h2>📑 ${type} Report</h2>
+
+        <div class="notice">
+            ${text}
+        </div>
+
+        <div class="notice">
+            📌 ${reportDetails}
+        </div>
+
+        <button class="btn"
+                onclick="generateReport('${type}')">
+
+            ⬇ Generate Report
+
+        </button>
+
+    `;
+
+}
+
+
+/* =========================
+   ACTUAL REPORT GENERATION
+========================= */
+
+function generateReport(type){
+
+    const generatedAt =
+        new Date().toLocaleString();
+
+
+    let content =
+
+`LIBTRACK
+COLLEGE LIBRARY USAGE ANALYSIS SYSTEM
+
+${type.toUpperCase()}
+
+Generated: ${generatedAt}
+
+`;
+
+
+    if(type === "Monthly Usage"){
+
+        content +=
+
+`MONTHLY USAGE
+
+- Library usage increased by 18%.
+- Peak activity: 2:00 PM – 4:00 PM.
+- Afternoon hours show high library activity.
+
+`;
+
+    }
+
+
+    else if(type === "Department Usage"){
+
+        content +=
+
+`DEPARTMENT USAGE
+
+- Highest usage department: CSE.
+- Other active departments:
+  AI & ML, ECE, EEE and Mechanical.
+
+`;
+
+    }
+
+
+    else if(type === "Book Popularity"){
+
+        const top =
+            books
+            .slice()
+            .sort((a,b) => b[6] - a[6])
+            .slice(0,6);
+
+
+        content +=
+
+`MOST BORROWED BOOKS
+
+`;
+
+
+        top.forEach((book,index) => {
+
+            content +=
+            `${index+1}. ${book[1]} — ${book[6]} borrows\n`;
+
+        });
+
+
+        content += "\n";
+
+    }
+
+
+    else if(type === "Overdue"){
+
+        const overdueCount = 5;
+
+        const finePerDay = 5;
+
+        const sampleDays = 3;
+
+        const sampleFine =
+            overdueCount *
+            sampleDays *
+            finePerDay;
+
+
+        content +=
+
+`OVERDUE REPORT
+
+Overdue Records: ${overdueCount}
+
+Fine Rate:
+₹${finePerDay} per overdue day per book.
+
+Sample Calculation:
+
+${overdueCount}
+overdue records ×
+${sampleDays}
+overdue days ×
+₹${finePerDay}
+
+= ₹${sampleFine}
+
+NOTE:
+Actual fine depends on the number of
+overdue days for each individual book.
+
+`;
+
+    }
+
+
+    content +=
+
+`LIBRARY CONTACT
+
+Email:
+libtracksece@gmail.com
+
+Landline:
++91 422 456 7890
+
+For queries regarding:
+- Book availability
+- Overdue books
+- Fine amount
+- Renewals
+- Library assistance
+
+Please contact the library.
+
+`;
+
+
+    const blob =
+        new Blob(
+            [content],
+            {type:"text/plain;charset=utf-8"}
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const a =
+        document.createElement("a");
+
+
+    a.href = url;
+
+
+    a.download =
+        type
+        .replace(/\s+/g,"_")
+        .toLowerCase()
+        +
+        "_report.txt";
+
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+loadStats();
+
+displayBooks();
+
+</script>
+
+</body>
+</html>
